@@ -38,7 +38,9 @@ require("lazy").setup({
     },
     {
         'nvim-telescope/telescope.nvim', tag = '0.1.5',
-         dependencies = { 'nvim-lua/plenary.nvim' }
+		lazy = true,
+         dependencies = { 'nvim-lua/plenary.nvim' },
+		 cmd = "Telescope"
     },
     {
         {"nvim-treesitter/nvim-treesitter",     ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "markdown" },
@@ -55,18 +57,10 @@ require("lazy").setup({
         config = function()
         require("nvim-tree").setup {}
         end,
-    },
-    {
-        "alexghergh/nvim-tmux-navigation",
-        event = "VeryLazy",
-        config = function()
-            require'nvim-tmux-navigation'.setup {
-                disable_when_zoomed = true
-            }
-        end,
-    },
+    }, 
     {
         'romgrk/barbar.nvim',
+		lazy = true,
         dependencies = {
             'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
             'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
@@ -77,10 +71,12 @@ require("lazy").setup({
                 NvimTree = true,
             },
         },
+		cmd = {"BufferNext", "BufferPrevious", "BufferClose"},
         version = '^1.0.0', -- optional: only update when a new 1.x version is released
     },
     {
         'stevearc/oil.nvim',
+	cmd = "Oil",
         opts = {},
         -- Optional dependencies
         dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -90,63 +86,39 @@ require("lazy").setup({
         opts = {
                 -- add any options here
         },
-        lazy = false,
     },
     {
-        'neovim/nvim-lspconfig'
+        'neovim/nvim-lspconfig',
+		lazy = true,
     },
     {
-        'simrat39/rust-tools.nvim'
+        'simrat39/rust-tools.nvim',
+		lazy = true,
     },
     {
         "iamcco/markdown-preview.nvim",
+		lazy = true,
         cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
         ft = { "markdown" },
         build = function() vim.fn["mkdp#util#install"]() end,
     },
     {
         "lewis6991/gitsigns.nvim",
+		lazy = true,
         config=function()
 			require("gitsigns").setup()
         end,
+		cmd = "GitSigns"
     },
     {
-        "tpope/vim-fugitive"
-    },
+        "tpope/vim-fugitive",
+		lazy = true,
+		cmd = "Git"
+    },	
 	{
-	  'stevearc/conform.nvim',
-	  opts = {},
-	},
-	{
-		'dstein64/vim-startuptime'
+		'dstein64/vim-startuptime',
+		cmd = "StartupTime"
 	}
-})
-
--- Rust Setup
-local rt = require("rust-tools")
-rt.setup({
-    server = {
-        on_attach = function(_, bufnr)
-            -- Hover actions
-            vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
-            -- Code action groups
-            vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
-        end,
-    },
-})
-
--- Conform Setup
-require("conform").setup({
-	notify_on_error=false,
-  	formatters_by_ft = {
-		lua = { "stylua" },
-		python = { "isort", "black" },
-		javascript = { { "prettierd", "prettier" } },
-  	},
-	format_on_save = {
-		timeout_ms = 500,
-		lsp_fallback = true,
-  	},
 })
 
 -- Key Bindings
