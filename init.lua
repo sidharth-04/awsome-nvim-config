@@ -25,8 +25,13 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-    { "folke/neoconf.nvim", cmd = "Neoconf" },
-    "folke/neodev.nvim",
+	{
+		"folke/neodev.nvim",
+		opts = {}
+	},
+	{
+		"neovim/nvim-lspconfig",
+	},
     {
         "folke/tokyonight.nvim",
         lazy = false, -- make sure we load this during startup if it is your main colorscheme
@@ -37,20 +42,23 @@ require("lazy").setup({
         end,
     },
     {
-        'nvim-telescope/telescope.nvim', tag = '0.1.5',
+		'nvim-telescope/telescope.nvim',
+		tag = '0.1.5',
 		lazy = true,
-         dependencies = { 'nvim-lua/plenary.nvim' },
-		 cmd = "Telescope"
+		dependencies = { 'nvim-lua/plenary.nvim' },
+	 	cmd = "Telescope"
     },
     {
-        {"nvim-treesitter/nvim-treesitter",     ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "markdown" },
-
-    -- Install parsers synchronously (only applied to `ensure_installed`)
-    sync_install = false, build = ":TSUpdate", lazy=true}},
+        {
+			"nvim-treesitter/nvim-treesitter",     ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "markdown" },
+			-- Install parsers synchronously (only applied to `ensure_installed`)
+			sync_install = false, build = ":TSUpdate", lazy=true
+		}
+	},
     {
-        "nvim-tree/nvim-tree.lua",
+		"nvim-tree/nvim-tree.lua",
+		cmd = {"NvimTreeToggle", "NvimTreeFocus"},
         version = "*",
-        lazy = false,
         dependencies = {
             "nvim-tree/nvim-web-devicons",
         },
@@ -60,7 +68,6 @@ require("lazy").setup({
     }, 
     {
         'romgrk/barbar.nvim',
-		lazy = true,
         dependencies = {
             'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
             'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
@@ -69,8 +76,7 @@ require("lazy").setup({
         opts = {
             sidebar_filetypes = {
                 NvimTree = true,
-            },
-        },
+        }},
 		cmd = {"BufferNext", "BufferPrevious", "BufferClose"},
         version = '^1.0.0', -- optional: only update when a new 1.x version is released
     },
@@ -86,33 +92,22 @@ require("lazy").setup({
         opts = {
                 -- add any options here
         },
-    },
-    {
-        'neovim/nvim-lspconfig',
-		lazy = true,
-    },
-    {
-        'simrat39/rust-tools.nvim',
-		lazy = true,
-    },
+    }, 
     {
         "iamcco/markdown-preview.nvim",
-		lazy = true,
         cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
         ft = { "markdown" },
         build = function() vim.fn["mkdp#util#install"]() end,
     },
     {
-        "lewis6991/gitsigns.nvim",
-		lazy = true,
-        config=function()
-			require("gitsigns").setup()
-        end,
-		cmd = "GitSigns"
-    },
+         "lewis6991/gitsigns.nvim",
+         config=function()
+		 	require("gitsigns").setup()
+         end,
+	cmd = "GitSigns"
+     },
     {
         "tpope/vim-fugitive",
-		lazy = true,
 		cmd = "Git"
     },	
 	{
@@ -125,12 +120,6 @@ require("lazy").setup({
 local opts = { noremap = true, silent = true }
 local map = vim.api.nvim_set_keymap
 local vmap = vim.keymap.set
-
--- Nvim Tmux Navigation
-vmap('n', "<C-h>", "<cmd>NvimTmuxNavigateLeft<cr>")
-vmap('n', "<C-j>", "<cmd>NvimTmuxNavigateDown<cr>")
-vmap('n', "<C-k>", "<cmd>NvimTmuxNavigateUp<cr>")
-vmap('n', "<C-l>", "<cmd>NvimTmuxNavigateRight<cr>")
 
 -- Telescope
 vmap("n", "<leader>ff", "<cmd>Telescope find_files<cr>")
