@@ -52,10 +52,10 @@ require("lazy").setup({
         {
 			"nvim-treesitter/nvim-treesitter",
 			ensure_installed = { "lua", "vim", "vimdoc", "query", "markdown" },
+			cmd = {"TSUpdate", "TSInstall"},
 			-- Install parsers synchronously (only applied to `ensure_installed`)
 			sync_install = false,
 			build = ":TSUpdate",
-			-- lazy=true
 		}
 	},
     {
@@ -108,7 +108,6 @@ require("lazy").setup({
          config=function()
 		 	require("gitsigns").setup()
          end,
-		 cmd = "GitSigns"
      },
     {
         "tpope/vim-fugitive",
@@ -134,6 +133,10 @@ require("lazy").setup({
 	  },
 	}
 })
+
+require'lspconfig'.clangd.setup{
+	-- Add setup here
+}
 
 -- Key Bindings
 local opts = { noremap = true, silent = true }
