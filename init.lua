@@ -48,11 +48,14 @@ require("lazy").setup({
 		dependencies = { 'nvim-lua/plenary.nvim' },
 	 	cmd = "Telescope"
     },
-    {
+	{
         {
-			"nvim-treesitter/nvim-treesitter",     ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "markdown" },
+			"nvim-treesitter/nvim-treesitter",
+			ensure_installed = { "lua", "vim", "vimdoc", "query", "markdown" },
 			-- Install parsers synchronously (only applied to `ensure_installed`)
-			sync_install = false, build = ":TSUpdate", lazy=true
+			sync_install = false,
+			build = ":TSUpdate",
+			-- lazy=true
 		}
 	},
     {
@@ -60,6 +63,7 @@ require("lazy").setup({
 		cmd = {"NvimTreeToggle", "NvimTreeFocus"},
         version = "*",
         dependencies = {
+			"lewis6991/gitsigns.nvim", -- OPTIONAL: for git status
             "nvim-tree/nvim-web-devicons",
         },
         config = function()
@@ -69,20 +73,20 @@ require("lazy").setup({
     {
         'romgrk/barbar.nvim',
         dependencies = {
-            'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
             'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
         },
         init = function() vim.g.barbar_auto_setup = false end,
         opts = {
             sidebar_filetypes = {
                 NvimTree = true,
-        }},
+			}
+		},
 		cmd = {"BufferNext", "BufferPrevious", "BufferClose"},
         version = '^1.0.0', -- optional: only update when a new 1.x version is released
     },
     {
         'stevearc/oil.nvim',
-	cmd = "Oil",
+		cmd = "Oil",
         opts = {},
         -- Optional dependencies
         dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -90,7 +94,7 @@ require("lazy").setup({
     {
         'numToStr/Comment.nvim',
         opts = {
-                -- add any options here
+			-- add any options here
         },
     }, 
     {
@@ -104,7 +108,7 @@ require("lazy").setup({
          config=function()
 		 	require("gitsigns").setup()
          end,
-	cmd = "GitSigns"
+		 cmd = "GitSigns"
      },
     {
         "tpope/vim-fugitive",
@@ -113,6 +117,21 @@ require("lazy").setup({
 	{
 		'dstein64/vim-startuptime',
 		cmd = "StartupTime"
+	},
+	{
+	  "christoomey/vim-tmux-navigator",
+	  cmd = {
+		"TmuxNavigateLeft",
+		"TmuxNavigateDown",
+		"TmuxNavigateUp",
+		"TmuxNavigateRight",
+	  },
+	  keys = {
+		{ "<c-h>", "<cmd><C-U>TmuxNavigateLeft<cr>" },
+		{ "<c-j>", "<cmd><C-U>TmuxNavigateDown<cr>" },
+		{ "<c-k>", "<cmd><C-U>TmuxNavigateUp<cr>" },
+		{ "<c-l>", "<cmd><C-U>TmuxNavigateRight<cr>" },
+	  },
 	}
 })
 
