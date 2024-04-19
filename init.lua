@@ -9,6 +9,7 @@ vim.opt.swapfile = false
 vim.opt.compatible = false
 vim.opt.termguicolors = true
 vim.opt.clipboard = "unnamedplus"
+vim.opt.laststatus = 0
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
@@ -34,8 +35,8 @@ require("lazy").setup({
 	},
     {
         "folke/tokyonight.nvim",
-        lazy = true, -- make sure we load this during startup if it is your main colorscheme
-        priority = 1000, -- make sure to load this before all the other start plugins
+        lazy = true,
+        priority = 1000,
         config = function()
             vim.cmd([[colorscheme tokyonight]])
         end,
@@ -43,6 +44,7 @@ require("lazy").setup({
 	{
 		"rebelot/kanagawa.nvim",
 		lazy = false,
+        priority = 1000,
 		config = function()
             vim.cmd([[colorscheme kanagawa-wave]])
         end,
@@ -57,11 +59,14 @@ require("lazy").setup({
 	{
         {
 			"nvim-treesitter/nvim-treesitter",
-			ensure_installed = { "lua", "vim", "vimdoc", "query", "markdown" },
+			ensure_installed = { "lua", "vim", "vimdoc", "query", "markdown", "glsl" },
 			cmd = {"TSUpdate", "TSInstall"},
 			-- Install parsers synchronously (only applied to `ensure_installed`)
 			sync_install = false,
 			build = ":TSUpdate",
+			highlight = {
+				enable = true,
+			},
 		}
 	},
     {
@@ -76,20 +81,6 @@ require("lazy").setup({
         require("nvim-tree").setup {}
         end,
     }, 
-    {
-        'romgrk/barbar.nvim',
-        dependencies = {
-            'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
-        },
-        init = function() vim.g.barbar_auto_setup = false end,
-        opts = {
-            sidebar_filetypes = {
-                NvimTree = true,
-			}
-		},
-		cmd = {"BufferNext", "BufferPrevious", "BufferClose"},
-        version = '^1.0.0', -- optional: only update when a new 1.x version is released
-    },
     {
         'stevearc/oil.nvim',
 		cmd = "Oil",
@@ -137,12 +128,32 @@ require("lazy").setup({
 		{ "<c-k>", "<cmd><C-U>TmuxNavigateUp<cr>" },
 		{ "<c-l>", "<cmd><C-U>TmuxNavigateRight<cr>" },
 	  },
+	},
+	{
+		"ray-x/web-tools.nvim",
+		config = function()
+			require('web-tools').setup({
+				keymaps = {
+					rename = nil,  -- by default use same setup of lspconfig
+					repeat_rename = '.', -- . to repeat
+				},
+				hurl = {  -- hurl default
+					show_headers = false, -- do not show http headers
+					floating = false,   -- use floating windows (need guihua.lua)
+					json5 = false,      -- use json5 parser require json5 treesitter
+					formatters = {  -- format the result by filetype
+					  json = { 'jq' },
+					  html = { 'prettier', '--parser', 'html' },
+					},
+				},
+			})
+		end,
 	}
 })
 
-require'lspconfig'.clangd.setup{
-	-- Add setup here
-}
+-- require'lspconfig'.clangd.setup{
+-- 	-- Add setup here
+-- }
 
 -- Key Bindings
 local opts = { noremap = true, silent = true }
@@ -153,24 +164,10 @@ local vmap = vim.keymap.set
 vmap("n", "<leader>ff", "<cmd>Telescope find_files<cr>")
 vmap("n", "<leader>fb", "<cmd>Telescope buffers<cr>")
 vmap("n", "<leader>gp", "<cmd>Telescope live_grep<cr>")
-map('n', '<A-1>', '<Cmd>BufferGoto 1<CR>', opts)
-map('n', '<A-2>', '<Cmd>BufferGoto 2<CR>', opts)
-map('n', '<A-3>', '<Cmd>BufferGoto 3<CR>', opts)
-map('n', '<A-4>', '<Cmd>BufferGoto 4<CR>', opts)
-map('n', '<A-5>', '<Cmd>BufferGoto 5<CR>', opts)
-map('n', '<A-6>', '<Cmd>BufferGoto 6<CR>', opts)
-map('n', '<A-7>', '<Cmd>BufferGoto 7<CR>', opts)
-map('n', '<A-8>', '<Cmd>BufferGoto 8<CR>', opts)
-map('n', '<A-9>', '<Cmd>BufferGoto 9<CR>', opts)
 
 -- NvimTree
 vmap("n", "<C-n>", "<cmd>NvimTreeToggle<cr>")
 vmap("n", "<leader>e", "<cmd>NvimTreeFocus<cr>")
-
--- Barbar
-vmap("n", "<leader>,", "<cmd>BufferNext<cr>")
-vmap("n", "<leader>.", "<cmd>BufferPrevious<cr>")
-vmap("n", "<leader>c", "<cmd>BufferClose<cr>")
 
 -- Oil
 map("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
