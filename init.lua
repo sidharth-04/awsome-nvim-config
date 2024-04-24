@@ -148,6 +148,9 @@ require("lazy").setup({
 				},
 			})
 		end,
+	},
+	{
+		"rhysd/conflict-marker.vim"
 	}
 })
 
