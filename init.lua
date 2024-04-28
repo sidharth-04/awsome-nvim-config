@@ -151,6 +151,9 @@ require("lazy").setup({
 	},
 	{
 		"rhysd/conflict-marker.vim"
+	},
+	{
+		'jiangmiao/auto-pairs'
 	}
 })
 
