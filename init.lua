@@ -11,6 +11,12 @@ vim.opt.termguicolors = true
 vim.opt.clipboard = "unnamedplus"
 vim.opt.laststatus = 0
 
+vim.api.nvim_create_autocmd("ExitPre", {
+	group = vim.api.nvim_create_augroup("Exit", { clear = true }),
+	command = "set guicursor=a:ver90",
+	desc = "Reset cursor to beam when leaving nvim"
+})
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
 if not vim.loop.fs_stat(lazypath) then
@@ -153,12 +159,17 @@ require("lazy").setup({
 		"rhysd/conflict-marker.vim"
 	},
 	{
-		'jiangmiao/auto-pairs'
-	}
+		"jiangmiao/auto-pairs"
+	},
+	{
+		"ThePrimeagen/harpoon",
+		branch = "harpoon2",
+		dependencies = { "nvim-lua/plenary.nvim" }
+	},
 })
 
 -- require'lspconfig'.clangd.setup{
--- 	-- Add setup here
+-- -- 	-- Add setup here
 -- }
 
 -- Key Bindings
@@ -189,3 +200,9 @@ map('n', "<leader>nw", "'<cmd>Neorg workspace ' . input('Enter workspace: ') . '
 map('n', "[h", "<cmd>Gitsigns prev_hunk<cr>", opts)
 map('n', "]h", "<cmd>Gitsigns next_hunk<cr>", opts)
 map('n', "<leader>gs", "<cmd>Gitsigns preview_hunk_inline<cr>", opts)
+
+-- Harpoon
+local harpoon = require("harpoon")
+harpoon:setup()
+vmap("n", "<leader>a", function() harpoon:list():add() end)
+vmap("n", "<leader>l", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
