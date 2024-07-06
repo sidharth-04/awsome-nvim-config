@@ -10,11 +10,10 @@ vim.opt.compatible = false
 vim.opt.termguicolors = true
 vim.opt.clipboard = "unnamedplus"
 vim.opt.laststatus = 0
-
+vim.opt.mouse = ""
 vim.api.nvim_create_autocmd("ExitPre", {
 	group = vim.api.nvim_create_augroup("Exit", { clear = true }),
-	command = "set guicursor=a:ver90",
-	desc = "Reset cursor to beam when leaving nvim"
+	command = "set guicursor=a:ver90", desc = "Reset cursor to beam when leaving nvim"
 })
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -36,9 +35,6 @@ require("lazy").setup({
 		"folke/neodev.nvim",
 		opts = {}
 	},
-	{
-		"neovim/nvim-lspconfig",
-	},
     {
         "folke/tokyonight.nvim",
         lazy = true,
@@ -53,10 +49,10 @@ require("lazy").setup({
         priority = 1000,
 		config = function()
             vim.cmd([[colorscheme kanagawa-wave]])
-        end,
+		end,
 	},
     {
-		'nvim-telescope/telescope.nvim',
+		"nvim-telescope/telescope.nvim",
 		tag = '0.1.5',
 		lazy = true,
 		dependencies = { 'nvim-lua/plenary.nvim' },
@@ -65,7 +61,7 @@ require("lazy").setup({
 	{
         {
 			"nvim-treesitter/nvim-treesitter",
-			ensure_installed = { "lua", "vim", "vimdoc", "query", "markdown", "glsl" },
+			ensure_installed = { "c", "python", "lua", "vim", "vimdoc", "query", "markdown" },
 			cmd = {"TSUpdate", "TSInstall"},
 			-- Install parsers synchronously (only applied to `ensure_installed`)
 			sync_install = false,
@@ -73,7 +69,23 @@ require("lazy").setup({
 			highlight = {
 				enable = true,
 			},
+			incremental_selection = {
+				enable = true,
+				keymaps = {
+				  init_selection = "<C-m>",
+				  node_incremental = "<C-m>",
+				  scope_incremental = "<C-s>",
+				}
+			},
 		}
+	},
+	{
+		"akinsho/toggleterm.nvim", version = "*", config = true
+	},
+	{
+		"williamboman/mason.nvim",	
+		"williamboman/mason-lspconfig.nvim",
+		"neovim/nvim-lspconfig",
 	},
     {
 		"nvim-tree/nvim-tree.lua",
@@ -111,7 +123,7 @@ require("lazy").setup({
          config=function()
 		 	require("gitsigns").setup()
          end,
-     },
+    },
     {
         "tpope/vim-fugitive",
 		cmd = "Git"
@@ -134,48 +146,62 @@ require("lazy").setup({
 		{ "<c-k>", "<cmd><C-U>TmuxNavigateUp<cr>" },
 		{ "<c-l>", "<cmd><C-U>TmuxNavigateRight<cr>" },
 	  },
-	},
-	{
-		"ray-x/web-tools.nvim",
-		config = function()
-			require('web-tools').setup({
-				keymaps = {
-					rename = nil,  -- by default use same setup of lspconfig
-					-- repeat_rename = '.', -- . to repeat
-				},
-				hurl = {  -- hurl default
-					show_headers = false, -- do not show http headers
-					floating = false,   -- use floating windows (need guihua.lua)
-					json5 = false,      -- use json5 parser require json5 treesitter
-					formatters = {  -- format the result by filetype
-					  json = { 'jq' },
-					  html = { 'prettier', '--parser', 'html' },
-					},
-				},
-			})
-		end,
-	},
-	{
-		"rhysd/conflict-marker.vim"
-	},
+	},	
 	{
 		"jiangmiao/auto-pairs"
+	},
+	{
+		'echasnovski/mini.surround',
+		version = false
 	},
 	{
 		"ThePrimeagen/harpoon",
 		branch = "harpoon2",
 		dependencies = { "nvim-lua/plenary.nvim" }
 	},
+	{
+	  'nvim-java/nvim-java',
+	  dependencies = {
+		'nvim-java/lua-async-await',
+		'nvim-java/nvim-java-refactor',
+		'nvim-java/nvim-java-core',
+		'nvim-java/nvim-java-test',
+		'nvim-java/nvim-java-dap',
+		'MunifTanjim/nui.nvim',
+		'neovim/nvim-lspconfig',
+		'mfussenegger/nvim-dap',
+		{
+		  'williamboman/mason.nvim',
+		  opts = {
+			registries = {
+			  'github:nvim-java/mason-registry',
+			  'github:mason-org/mason-registry',
+			},
+		  },
+		}
+	  },
+	}
 })
 
--- require'lspconfig'.clangd.setup{
--- -- 	-- Add setup here
--- }
+require("mason").setup()
+require("mason-lspconfig").setup({
+	ensure_installed = {}
+})
+
+require("mason-lspconfig").setup_handlers {
+	function (server_name) -- default handler (optional)
+		require("lspconfig")[server_name].setup {}
+	end,
+}
 
 -- Key Bindings
 local opts = { noremap = true, silent = true }
 local map = vim.api.nvim_set_keymap
 local vmap = vim.keymap.set
+
+-- Utility
+vmap("n", "<F1>", ":w<CR>")
+vmap("n", "W", ":w<CR>")
 
 -- Telescope
 vmap("n", "<leader>ff", "<cmd>Telescope find_files<cr>")
@@ -193,8 +219,8 @@ map("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
 vmap("n", "<leader>mp", "<cmd>MarkdownPreview<cr>")
 vmap("n", "<leader>mc", "<cmd>MarkdownPreviewStop<cr>")
 
--- Neorg
-map('n', "<leader>nw", "'<cmd>Neorg workspace ' . input('Enter workspace: ') . '<cr>'", {expr = true, noremap = true})
+-- Mini Surround
+require('mini.surround').setup()
 
 -- Gitsigns
 map('n', "[h", "<cmd>Gitsigns prev_hunk<cr>", opts)
@@ -206,3 +232,8 @@ local harpoon = require("harpoon")
 harpoon:setup()
 vmap("n", "<leader>a", function() harpoon:list():add() end)
 vmap("n", "<leader>l", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
+vmap("n", "<leader>h1", function() harpoon:list():select(1) end)
+vmap("n", "<leader>h2", function() harpoon:list():select(2) end)
+vmap("n", "<leader>h3", function() harpoon:list():select(3) end)
+vmap("n", "<leader>h4", function() harpoon:list():select(4) end)
+vmap("n", "<leader>h5", function() harpoon:list():select(5) end)
