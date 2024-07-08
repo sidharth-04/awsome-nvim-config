@@ -5,8 +5,7 @@ vim.wo.number = true
 vim.wo.relativenumber = true
 vim.opt.shiftwidth = 4
 vim.opt.tabstop = 4
-vim.opt.swapfile = false
-vim.opt.compatible = false
+vim.opt.swapfile = false vim.opt.compatible = false
 vim.opt.termguicolors = true
 vim.opt.clipboard = "unnamedplus"
 vim.opt.laststatus = 0
@@ -15,6 +14,13 @@ vim.api.nvim_create_autocmd("ExitPre", {
 	group = vim.api.nvim_create_augroup("Exit", { clear = true }),
 	command = "set guicursor=a:ver90", desc = "Reset cursor to beam when leaving nvim"
 })
+vim.api.nvim_create_user_command("Terminal", function()
+	vim.cmd("terminal")
+	vim.cmd("setlocal nonumber")
+	vim.cmd("setlocal norelativenumber")
+	vim.cmd("setlocal signcolumn=no")
+	vim.cmd("startinsert")
+end, {})
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
@@ -23,9 +29,7 @@ if not vim.loop.fs_stat(lazypath) then
         "git",
         "clone",
         "--filter=blob:none",
-        "https://github.com/folke/lazy.nvim.git",
-        "--branch=stable", -- latest stable release
-        lazypath,
+        "https://github.com/folke/lazy.nvim.git", "--branch=stable", -- latest stable release lazypath,
     })
 end
 vim.opt.rtp:prepend(lazypath)
@@ -80,10 +84,7 @@ require("lazy").setup({
 		}
 	},
 	{
-		"akinsho/toggleterm.nvim", version = "*", config = true
-	},
-	{
-		"williamboman/mason.nvim",	
+		"williamboman/mason.nvim",
 		"williamboman/mason-lspconfig.nvim",
 		"neovim/nvim-lspconfig",
 	},
@@ -98,7 +99,7 @@ require("lazy").setup({
         config = function()
         require("nvim-tree").setup {}
         end,
-    }, 
+    },
     {
         'stevearc/oil.nvim',
 		cmd = "Oil",
@@ -127,7 +128,7 @@ require("lazy").setup({
     {
         "tpope/vim-fugitive",
 		cmd = "Git"
-    },	
+    },
 	{
 		'dstein64/vim-startuptime',
 		cmd = "StartupTime"
@@ -146,7 +147,7 @@ require("lazy").setup({
 		{ "<c-k>", "<cmd><C-U>TmuxNavigateUp<cr>" },
 		{ "<c-l>", "<cmd><C-U>TmuxNavigateRight<cr>" },
 	  },
-	},	
+	},
 	{
 		"jiangmiao/auto-pairs"
 	},
@@ -188,11 +189,20 @@ require("mason-lspconfig").setup({
 	ensure_installed = {}
 })
 
+-- Autoload lsp clients on startup
 require("mason-lspconfig").setup_handlers {
 	function (server_name) -- default handler (optional)
 		require("lspconfig")[server_name].setup {}
 	end,
 }
+
+-- Toggle lsp diagnostics
+virtual_text = {}
+virtual_text.show = true
+virtual_text.toggle = function()
+    virtual_text.show = not virtual_text.show
+	if virtual_text.show then vim.diagnostic.enable() else vim.diagnostic.disable() end
+end
 
 -- Key Bindings
 local opts = { noremap = true, silent = true }
@@ -202,8 +212,19 @@ local vmap = vim.keymap.set
 -- Utility
 vmap("n", "<F1>", ":w<CR>")
 vmap("n", "W", ":w<CR>")
+map("n", "<Leader>tt", "<Cmd>lua virtual_text.toggle()<CR>", opts)
+
+-- Terminal
+vim.keymap.set(
+	"n",
+	"<c-cr>",
+	"<cmd>Terminal<cr>"
+)
+vim.keymap.set("t", "<c-a>", "<c-\\><c-n>")
 
 -- Telescope
+require "telescope.builtin".lsp_definitions { jump_type = "never" }
+vmap("n", "fd", "<cmd>lua require 'telescope.builtin'.lsp_definitions { jump_type = 'never' }<cr>")
 vmap("n", "<leader>ff", "<cmd>Telescope find_files<cr>")
 vmap("n", "<leader>fb", "<cmd>Telescope buffers<cr>")
 vmap("n", "<leader>gp", "<cmd>Telescope live_grep<cr>")
@@ -225,7 +246,7 @@ require('mini.surround').setup()
 -- Gitsigns
 map('n', "[h", "<cmd>Gitsigns prev_hunk<cr>", opts)
 map('n', "]h", "<cmd>Gitsigns next_hunk<cr>", opts)
-map('n', "<leader>gs", "<cmd>Gitsigns preview_hunk_inline<cr>", opts)
+map('n', "gs", "<cmd>Gitsigns preview_hunk_inline<cr>", opts)
 
 -- Harpoon
 local harpoon = require("harpoon")
